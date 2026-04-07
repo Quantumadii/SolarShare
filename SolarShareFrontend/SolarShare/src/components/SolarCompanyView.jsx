@@ -70,10 +70,10 @@ const SolarCompanyView = () => {
   const fetchMarketplace = async () => {
     try {
       const [resListings, resPools] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/listings/all`, {
+        fetch(`${API_BASE_URL}/listings/all`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`${API_BASE_URL}/api/clusters/all`, {
+        fetch(`${API_BASE_URL}/clusters/all`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -144,8 +144,8 @@ const SolarCompanyView = () => {
       setActionLoading((prev) => ({ ...prev, [key]: true }));
       const url =
         type === "pool"
-          ? `${API_BASE_URL}/api/clusters/${id}/interest`
-          : `${API_BASE_URL}/api/listings/${id}/interest`;
+          ? `${API_BASE_URL}/clusters/${id}/interest`
+          : `${API_BASE_URL}/listings/${id}/interest`;
 
       try {
         const response = await fetch(url, {
@@ -189,7 +189,7 @@ const SolarCompanyView = () => {
     setActionLoading((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/listings/${listingId}/agreement`, {
+      const response = await fetch(`${API_BASE_URL}/listings/${listingId}/agreement`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -229,7 +229,7 @@ const SolarCompanyView = () => {
     await runSingleFlight(key, async () => {
     setActionLoading((prev) => ({ ...prev, [key]: true }));
     try {
-      const response = await fetch(`${API_BASE_URL}/api/clusters/${poolId}/contributions/${listingId}/reject`, {
+      const response = await fetch(`${API_BASE_URL}/clusters/${poolId}/contributions/${listingId}/reject`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
