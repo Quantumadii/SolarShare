@@ -43,7 +43,7 @@ const HomeownerView = () => {
     
     const fetchMyListings = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/listings/my-listings`, {
+        const response = await fetch(`${API_BASE_URL}/listings/my-listings`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -71,7 +71,7 @@ const HomeownerView = () => {
     setLoadingFor(key, true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/listings/${listingId}/accept/${companyId}`, {
+      const response = await fetch(`${API_BASE_URL}/listings/${listingId}/accept/${companyId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -83,7 +83,7 @@ const HomeownerView = () => {
 
       toast.success('Company accepted and agreement generated');
 
-      const refreshed = await fetch(`${API_BASE_URL}/api/listings/my-listings`, {
+      const refreshed = await fetch(`${API_BASE_URL}/listings/my-listings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (refreshed.ok) {
@@ -110,7 +110,7 @@ const HomeownerView = () => {
     setLoadingFor(key, true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/listings/${listingId}/agreement`, {
+      const response = await fetch(`${API_BASE_URL}/listings/${listingId}/agreement`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -156,7 +156,7 @@ const HomeownerView = () => {
     setLoadingFor(key, true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/clusters/${listing.clusterProject.id}/contributions/${listing.id}/opt-out`, {
+      const response = await fetch(`${API_BASE_URL}/clusters/${listing.clusterProject.id}/contributions/${listing.id}/opt-out`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -168,7 +168,7 @@ const HomeownerView = () => {
 
       toast.success('Opted out from cluster successfully');
 
-      const refreshed = await fetch(`${API_BASE_URL}/api/listings/my-listings`, {
+      const refreshed = await fetch(`${API_BASE_URL}/listings/my-listings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (refreshed.ok) {
@@ -209,7 +209,7 @@ const HomeownerView = () => {
 
     setLoadingFor(key, true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/listings/${listing.id}`, {
+      const response = await fetch(`${API_BASE_URL}/listings/${listing.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
