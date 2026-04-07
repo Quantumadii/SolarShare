@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUserProfile = async (jwtToken) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/users/me`, {
+            const response = await fetch(`${API_BASE_URL}/users/me`, {
                 headers: {
                     Authorization: `Bearer ${jwtToken}`,
                     "Content-Type": "application/json"
