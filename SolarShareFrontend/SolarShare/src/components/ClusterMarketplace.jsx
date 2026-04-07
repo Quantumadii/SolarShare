@@ -117,7 +117,7 @@ const ClusterMarketplace = () => {
 
   const fetchClusters = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/clusters/all`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) {
@@ -160,7 +160,7 @@ const ClusterMarketplace = () => {
 
     await runSingleFlight(key, async () => {
       setActionLoading((prev) => ({ ...prev, [key]: true }));
-      const res = await fetch(`${API_BASE_URL}/api/clusters/create`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(newCluster)
@@ -185,7 +185,7 @@ const ClusterMarketplace = () => {
 
     await runSingleFlight(key, async () => {
       setActionLoading((prev) => ({ ...prev, [key]: true }));
-      const res = await fetch(`${API_BASE_URL}/api/clusters/${selectedCluster.id}/join`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/${selectedCluster.id}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(contribution)
