@@ -131,7 +131,7 @@ const CreateListing = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/listings/create`, {
+      const response = await fetch(`${API_BASE_URL}/listings/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
