@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Listing Created</title>
+</head>
+<body style="margin:0;padding:0;background:#f4faf6;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:24px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;border:1px solid #d9efe0;overflow:hidden;">
+                <tr>
+                    <td style="background:linear-gradient(90deg,#10b981,#14b8a6);padding:18px 24px;color:#fff;font-size:20px;font-weight:700;">Rooftop Listing Created</td>
+                </tr>
+                <tr>
+                    <td style="padding:24px;color:#1f2937;line-height:1.6;">
+                        <p>Hi <strong th:text="${ownerName}">Owner</strong>,</p>
+                        <p>Your rooftop listing is now live on SolarShare.</p>
+                        <ul>
+                            <li><strong>Address:</strong> <span th:text="${address}">Address</span></li>
+                            <li><strong>City:</strong> <span th:text="${city}">City</span></li>
+                            <li><strong>Area:</strong> <span th:text="${area}">0</span> sq.ft</li>
+                            <li><strong>Expected Rent:</strong> INR <span th:text="${rent}">0</span>/month</li>
+                        </ul>
+                        <p>We will notify you when solar companies show interest.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

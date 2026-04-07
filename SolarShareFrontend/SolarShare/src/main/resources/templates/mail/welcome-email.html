@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome to SolarShare</title>
+</head>
+<body style="margin:0;padding:0;background:#f4faf6;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:24px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;border:1px solid #d9efe0;overflow:hidden;">
+                <tr>
+                    <td style="background:linear-gradient(90deg,#10b981,#14b8a6);padding:18px 24px;color:#fff;font-size:20px;font-weight:700;">Welcome to SolarShare</td>
+                </tr>
+                <tr>
+                    <td style="padding:24px;color:#1f2937;line-height:1.6;">
+                        <p>Hi <strong th:text="${fullName}">User</strong>,</p>
+                        <p>Your SolarShare account is now active.</p>
+                        <p>You can now create rooftop listings, connect with solar companies, and track your opportunities.</p>
+                        <p>Thank you for joining the clean energy movement.</p>
+                        <p style="margin-top:24px;">Team SolarShare</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

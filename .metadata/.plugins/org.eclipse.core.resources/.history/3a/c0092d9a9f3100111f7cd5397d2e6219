@@ -1,0 +1,9 @@
+package com.atharv.SolarShare.dto;
+
+import lombok.Data;
+
+@Data
+public class OtpVerificationRequest {
+    private String email;
+    private String otp;
+}

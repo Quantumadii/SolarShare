@@ -1,0 +1,9 @@
+spring.application.name=springSecurity
+
+spring.datasource.url=jdbc:postgresql://ep-rough-thunder-ai3voy2r-pooler.c-4.us-east-1.aws.neon.tech/Solar_Share?user=neondb_owner&password=npg_dSwDOveWPA01&sslmode=require&channelBinding=require
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+server.servlet.session.cookie.same-site=strict
+server.port=8081

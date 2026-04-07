@@ -1,0 +1,48 @@
+package com.SolarShare.controller;
+
+import com.atharv.SolarShare.model.ClusterProject;
+import com.atharv.SolarShare.model.RooftopListing;
+import com.atharv.SolarShare.service.ClusterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/clusters")
+//@CrossOrigin(originPatterns = "*")
+public class ClusterController {
+    @Autowired private ClusterService clusterService;
+
+    @GetMapping("/all")
+    public List<ClusterProject> getClusters() {
+        return clusterService.getAllClusters();
+    }
+
+    @PostMapping("/{clusterId}/join")
+    public ResponseEntity<?> joinCluster(@PathVariable Long clusterId, @RequestBody RooftopListing listing, Authentication auth) {
+        return clusterService.contributeToCluster(clusterId, listing, auth.getName());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createCluster(@RequestBody ClusterProject cluster, Authentication auth) {
+        try {
+            ClusterProject created = clusterService.createNewCluster(cluster, auth.getName());
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/interest")
+    public ResponseEntity<?> expressInterestInPool(@PathVariable Long id, Authentication auth) {
+        try {
+            clusterService.addInterestToPool(id, auth.getName());
+            return ResponseEntity.ok("Interest recorded for the entire community pool!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Could not record interest: " + e.getMessage());
+        }
+    }
+}

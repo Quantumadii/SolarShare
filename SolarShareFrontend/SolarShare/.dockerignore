@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+target
+=======
+node_modules
+dist
+>>>>>>> 3cfffa6 (Initial Commit for SolarShare Frontend)
+.git
+.gitignore
+Dockerfile
+docker-compose.yml

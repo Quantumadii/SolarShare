@@ -1,0 +1,11 @@
+package com.atharv.SolarShare.repo;
+
+import com.atharv.SolarShare.model.AgreementDocument;
+import com.atharv.SolarShare.model.RooftopListing;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface AgreementDocumentRepository extends JpaRepository<AgreementDocument, Long> {
+    Optional<AgreementDocument> findByListing(RooftopListing listing);
+}

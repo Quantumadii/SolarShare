@@ -1,0 +1,139 @@
+package com.atharv.SolarShare.service;
+
+import com.atharv.SolarShare.model.AgreementDocument;
+import com.atharv.SolarShare.model.RooftopListing;
+
+import com.atharv.SolarShare.model.UserInfo;
+import com.atharv.SolarShare.model.UserType;
+import com.atharv.SolarShare.repo.AgreementDocumentRepository;
+import com.atharv.SolarShare.repo.RooftopRepository;
+import com.atharv.SolarShare.repo.UserInfoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class RooftopService {
+
+    @Autowired
+    private RooftopRepository rooftopRepo;
+
+    @Autowired
+    private UserInfoRepository userInfoRepo;
+
+    @Autowired
+    private AgreementDocumentRepository agreementDocumentRepository;
+
+    @Autowired
+    private AgreementPdfService agreementPdfService;
+
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
+    @Transactional
+    public RooftopListing createListing(RooftopListing listing, String username) {
+        UserInfo owner = userInfoRepo.findByUserUsername(username);
+        listing.setOwner(owner);
+        // Auto-calculate monthly rent at Rs 5 per sq ft
+//        if (listing.getAreaSquareFt() != null && listing.getAreaSquareFt() > 0) {
+//            listing.setExpectedRent((long) (listing.getAreaSquareFt() * 5));
+//        }
+        RooftopListing saved = rooftopRepo.save(listing);
+        emailNotificationService.sendListingCreatedEmail(owner, saved);
+        return saved;
+    }
+
+    public List<RooftopListing> getAllListings() {
+        return rooftopRepo.findAll();
+    }
+
+    @Transactional
+    public void addInterest(Long listingId, String companyUsername) {
+        RooftopListing listing = rooftopRepo.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Listing not found"));
+
+        UserInfo company = userInfoRepo.findByUserUsername(companyUsername);
+
+        if (company.getType() != UserType.SOLAR_COMPANY) {
+            throw new RuntimeException("Only solar providers can express interest");
+        }
+
+        if (listing.getInterestedCompanies().contains(company)) {
+            throw new RuntimeException("Already interest listed for this property");
+        }
+
+        listing.getInterestedCompanies().add(company);
+        rooftopRepo.save(listing);
+        emailNotificationService.sendInterestNotificationEmail(listing.getOwner(), company, listing);
+    }
+
+    public List<RooftopListing> getListingsByOwner(String username) {
+        UserInfo owner = userInfoRepo.findByUserUsername(username);
+        return rooftopRepo.findByOwner(owner);
+    }
+
+    @Transactional
+    public RooftopListing acceptCompanyForListing(Long listingId, Long companyId, String ownerUsername) {
+        RooftopListing listing = rooftopRepo.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Listing not found"));
+
+        UserInfo owner = userInfoRepo.findByUserUsername(ownerUsername);
+        if (listing.getOwner() == null || !listing.getOwner().getId().equals(owner.getId())) {
+            throw new RuntimeException("Only listing owner can accept a company");
+        }
+
+        UserInfo company = userInfoRepo.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        if (company.getType() != UserType.SOLAR_COMPANY) {
+            throw new RuntimeException("Selected user is not a solar company");
+        }
+
+        if (!listing.getInterestedCompanies().contains(company)) {
+            throw new RuntimeException("This company has not expressed interest in the listing");
+        }
+
+        listing.setAcceptedCompany(company);
+        listing.setAcceptedAt(LocalDateTime.now());
+        RooftopListing savedListing = rooftopRepo.save(listing);
+
+        byte[] pdf = agreementPdfService.generateSampleAgreement(savedListing, owner, company);
+        AgreementDocument agreement = agreementDocumentRepository.findByListing(savedListing)
+                .orElseGet(AgreementDocument::new);
+        agreement.setListing(savedListing);
+        agreement.setPdfContent(pdf);
+        agreement.setFileName(buildAgreementFileName(savedListing));
+        agreement.setCreatedAt(LocalDateTime.now());
+        agreementDocumentRepository.save(agreement);
+
+        emailNotificationService.sendListingAcceptedEmails(owner, company, savedListing);
+
+        return savedListing;
+    }
+
+    @Transactional(readOnly = true)
+    public AgreementDocument getAgreementForListing(Long listingId, String username) {
+        RooftopListing listing = rooftopRepo.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Listing not found"));
+
+        UserInfo requestingUser = userInfoRepo.findByUserUsername(username);
+
+        boolean isOwner = listing.getOwner() != null && listing.getOwner().getId().equals(requestingUser.getId());
+        boolean isAcceptedCompany = listing.getAcceptedCompany() != null
+                && listing.getAcceptedCompany().getId().equals(requestingUser.getId());
+
+        if (!isOwner && !isAcceptedCompany) {
+            throw new RuntimeException("You are not authorized to download this agreement");
+        }
+
+        return agreementDocumentRepository.findByListing(listing)
+                .orElseThrow(() -> new RuntimeException("Agreement is not generated for this listing"));
+    }
+
+    private String buildAgreementFileName(RooftopListing listing) {
+        return "rent-agreement-listing-" + listing.getId() + ".pdf";
+    }
+}

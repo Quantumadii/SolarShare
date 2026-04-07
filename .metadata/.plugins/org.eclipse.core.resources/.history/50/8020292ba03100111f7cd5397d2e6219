@@ -1,0 +1,92 @@
+package com.atharv.SolarShare.service;
+
+import com.atharv.SolarShare.model.ClusterProject;
+import com.atharv.SolarShare.model.RooftopListing;
+import com.atharv.SolarShare.model.UserInfo;
+import com.atharv.SolarShare.model.UserType;
+import com.atharv.SolarShare.repo.ClusterProjectRepo;
+import com.atharv.SolarShare.repo.RooftopRepository;
+import com.atharv.SolarShare.repo.UserInfoRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ClusterService {
+    @Autowired
+    private ClusterProjectRepo projectRepo;
+    @Autowired private RooftopRepository rooftopRepo;
+    @Autowired private UserInfoRepository userRepo;
+
+    @Transactional
+    public ResponseEntity<?> contributeToCluster(Long clusterId, RooftopListing listing, String username) {
+        ClusterProject project = projectRepo.findById(clusterId).orElseThrow();
+
+        if(project.isFull()) return ResponseEntity.badRequest().body("Project is already full!");
+
+        UserInfo owner = userRepo.findByUserUsername(username);
+        listing.setOwner(owner);
+        listing.setClusterProject(project);
+        listing.setCity(project.getCity());
+
+        rooftopRepo.save(listing);
+
+        project.setCurrentArea(project.getCurrentArea() + listing.getAreaSquareFt());
+        if(project.getCurrentArea() >= project.getTargetArea()) {
+            project.setFull(true);
+        }
+        projectRepo.save(project);
+
+        return ResponseEntity.ok(project);
+    }
+
+    public ClusterProject createNewCluster(ClusterProject cluster, String username) {
+        UserInfo creator = userRepo.findByUserUsername(username);
+
+        if (creator == null) {
+            throw new RuntimeException("User profile not found");
+        }
+
+        if (creator.getType() != UserType.SOLAR_COMPANY) {
+            throw new RuntimeException("Only providers (Solar Companies) can create clusters.");
+        }
+
+        cluster.setCreator(creator);
+        cluster.setCurrentArea(0.0);
+        cluster.setFull(false);
+        if (cluster.getTargetArea() <= 0) {
+            cluster.setTargetArea(5000.0);
+        }
+        return projectRepo.save(cluster);
+    }
+
+    public List<ClusterProject> getAllClusters() {
+        return projectRepo.findAll();
+    }
+
+    @Transactional
+    public void addInterestToPool(Long clusterId, String companyUsername) {
+        ClusterProject project = projectRepo.findById(clusterId)
+                .orElseThrow(() -> new RuntimeException("Cluster not found"));
+
+        UserInfo company = userRepo.findByUserUsername(companyUsername);
+
+        if (company.getType() == UserType.SOLAR_COMPANY) {
+            if (!project.getInterestedCompanies().contains(company)) {
+                project.getInterestedCompanies().add(company);
+
+                for (RooftopListing listing : project.getContributions()) {
+                    if (!listing.getInterestedCompanies().contains(company)) {
+                        listing.getInterestedCompanies().add(company);
+                    }
+                }
+                projectRepo.save(project);
+            }
+        } else {
+            throw new RuntimeException("Only Solar Companies can express interest in clusters.");
+        }
+    }
+}
