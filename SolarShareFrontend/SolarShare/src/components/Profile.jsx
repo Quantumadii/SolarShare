@@ -34,7 +34,7 @@ const Profile = () => {
     const fetchUserStats = async () => {
         if (user?.type !== 'HOMEOWNER') return;
         try {
-            const response = await fetch(`${API_BASE_URL}/api/listings/my-listings`, {
+            const response = await fetch(`${API_BASE_URL}/listings/my-listings`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
