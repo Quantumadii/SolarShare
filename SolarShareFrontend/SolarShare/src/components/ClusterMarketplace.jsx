@@ -529,7 +529,7 @@ const ClusterCard = ({ cluster, onJoin, isDarkMode, canContribute, user, onDisso
   const fetchAgreements = async () => {
     try {
       setLoadingAgreements(true);
-      const res = await fetch(`${API_BASE_URL}/api/clusters/${cluster.id}/agreements`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/${cluster.id}/agreements`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -553,7 +553,7 @@ const ClusterCard = ({ cluster, onJoin, isDarkMode, canContribute, user, onDisso
     await runSingleFlight(key, async () => {
       setActionLoading((prev) => ({ ...prev, [key]: true }));
       try {
-      const res = await fetch(`${API_BASE_URL}/api/clusters/agreements/${agreementId}/download`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/agreements/${agreementId}/download`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -590,7 +590,7 @@ const ClusterCard = ({ cluster, onJoin, isDarkMode, canContribute, user, onDisso
     await runSingleFlight(key, async () => {
       setActionLoading((prev) => ({ ...prev, [key]: true }));
       try {
-      const res = await fetch(`${API_BASE_URL}/api/clusters/${cluster.id}/dissolve`, {
+      const res = await fetch(`${API_BASE_URL}/clusters/${cluster.id}/dissolve`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
